@@ -2,7 +2,7 @@ import * as cheerio from 'cheerio';
 import { json, fetchText, norm } from './_util.js';
 
 const JP_SCHEDULE = 'https://www.usj.co.jp/web/ja/jp/attractions/show-and-attraction-schedule';
-const JP_HOURS = 'https://www.usj.co.jp/web/ja/jp/park-guide/schedule/park-hour';
+const JP_HOURS = 'https://www.usj.co.jp/web/ja/jp/park-guide/schedule/park-hour2';
 const ACTUAL_OPEN_SOURCE = 'https://usjreal.asumirai.info/guide/usj-monthly-open.html';
 
 function to24(h, m, ampm) {
