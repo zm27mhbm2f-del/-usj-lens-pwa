@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#08111f" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="USJ Lens" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <link rel="stylesheet" href="/styles.css" />
+  <title>USJ Lens</title>
+</head>
+<body>
+  <header class="topbar">
+    <div><div class="eyebrow">UNIVERSAL STUDIOS JAPAN</div><h1>USJ <span>Lens</span></h1></div>
+    <button id="refreshBtn" class="icon-btn" aria-label="更新">↻</button>
+  </header>
+
+  <main>
+    <section class="hero-card">
+      <div class="summary-head">
+        <div><div class="muted" id="todayLabel">今日</div><div class="park-state" id="parkState">取得中</div></div>
+        <div class="live-dot-wrap"><span class="live-dot"></span> LIVE</div>
+      </div>
+      <div class="metric-grid">
+        <div class="metric"><span>公式営業時間</span><strong id="officialHours">--:-- — --:--</strong></div>
+        <div class="metric"><span>実開園実績</span><strong id="actualOpen">未掲載</strong><small id="actualOpenKind">第三者記録</small></div>
+        <div class="metric"><span>現在の平均</span><strong id="parkAvg">--分</strong></div>
+        <div class="metric"><span>運行中</span><strong id="openCount">-- / --</strong></div>
+      </div>
+      <div class="best-now" id="bestNow"><span>今の狙い目</span><div id="bestNowItems">取得中...</div></div>
+    </section>
+
+    <nav class="tabs" aria-label="メインメニュー">
+      <button class="tab active" data-tab="live">待ち時間</button>
+      <button class="tab" data-tab="avg">過去平均</button>
+      <button class="tab" data-tab="shows">ショー</button>
+      <button class="tab" data-tab="hours">営業時間</button>
+    </nav>
+
+    <section id="live" class="panel active">
+      <div class="controls sticky-controls">
+        <label class="search"><span>⌕</span><input id="searchInput" placeholder="アトラクションを検索" /></label>
+        <select id="sortSelect" aria-label="並び順">
+          <option value="waitAsc">短い順</option>
+          <option value="waitDesc">長い順</option>
+          <option value="favorite">お気に入り</option>
+          <option value="name">名前順</option>
+        </select>
+      </div>
+      <div class="section-row"><h2>リアルタイム待ち時間</h2><span class="muted small" id="lastUpdated">更新 --:--</span></div>
+      <div id="rideList" class="ride-list"></div>
+      <div class="attribution">待ち時間: <a href="https://queue-times.com/" target="_blank" rel="noreferrer">Queue-Times.com</a></div>
+    </section>
+
+    <section id="avg" class="panel">
+      <div class="card controls-card">
+        <label>アトラクション<select id="rideSelect"></select></label>
+        <label>年<select id="yearSelect"></select></label>
+      </div>
+      <div class="segmented scroll-seg" id="periodTabs">
+        <button class="active" data-period="hours">時間別</button>
+        <button data-period="date">日にち別</button>
+        <button data-period="months">月別</button>
+        <button data-period="years">年別</button>
+        <button data-period="weekdays">曜日別</button>
+      </div>
+      <div id="datePickerWrap" class="date-row hidden"><input id="historyDate" type="date" /><button id="loadDateBtn" class="primary">この日を見る</button></div>
+      <div class="section-row"><div><h2 id="avgTitle">時間別平均</h2><p class="muted small" id="avgSubtitle">アプリ作成前を含む公開履歴</p></div></div>
+      <div class="card chart-card"><div id="avgChart" class="bar-chart"></div></div>
+      <div id="avgTable" class="stat-list"></div>
+      <div class="source-note">Queue-Timesの公開統計を利用します。「日にち別」は指定日の各アトラクション平均です。</div>
+    </section>
+
+    <section id="shows" class="panel">
+      <div class="date-row"><input id="showDate" type="date" /><button id="loadShowsBtn" class="primary">表示</button></div>
+      <div class="chips" id="showFilters"><button class="chip active" data-filter="all">すべて</button><button class="chip" data-filter="パレード">パレード</button><button class="chip" data-filter="ステージ">ステージ</button><button class="chip" data-filter="ストリート">ストリート</button><button class="chip" data-filter="ショー">その他</button></div>
+      <div class="section-row"><h2 id="showHeading">ショースケジュール</h2><span class="muted small" id="showCount"></span></div>
+      <div id="showList" class="show-list"></div>
+      <div class="source-note">USJ公式「ショー＆アトラクション・スケジュール」から取得します。天候や運営状況で変更・中止される場合があります。</div>
+    </section>
+
+    <section id="hours" class="panel">
+      <div class="date-row"><input id="hoursDate" type="date" /><button id="loadHoursBtn" class="primary">表示</button></div>
+      <div class="card hours-detail">
+        <div class="kicker">USJ公式営業時間</div>
+        <div class="big-time" id="hoursBig">--:-- <span>→</span> --:--</div>
+        <hr />
+        <div class="detail-row"><span>実際の開園（第三者記録）</span><strong id="hoursActual">未掲載</strong></div>
+        <div class="detail-row"><span>開園予想（第三者）</span><strong id="hoursForecast">未掲載</strong></div>
+        <div class="detail-row"><span>公式予定との差</span><strong id="hoursDiff">—</strong></div>
+      </div>
+      <div class="source-note">公式営業時間はUSJ公式サイトから取得します。USJは「実際の開園時刻」を確定値として公開していないため、実開園欄は非公式の第三者記録を別表示します。予想値を実績として扱いません。</div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status"></div>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
